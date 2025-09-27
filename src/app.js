@@ -10,16 +10,23 @@ import User from "./models/user.model.js";
 import jwt from "jsonwebtoken";
 import authenticate from "./middlewares/auth.middleware.js";
 import upload from "./middlewares/upload.js";
+import { Readable } from 'stream'; // For buffer-to-stream conversion in Cloudinary
+import cloudinary from 'cloudinary'; // Import Cloudinary v2
 // import "./auth/passport.js";
 
-dotenv.config({
-    path: "./env"
-})
+dotenv.config();
 
 const clientId = process.env.GOOGLE_CLIENT_ID;
 const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
 
 const app = express();
+
+// Cloudinary config (move to a separate file if needed)
+cloudinary.v2.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
         // Middleware
 app.use(cors({
@@ -110,84 +117,87 @@ app.get("/logout", (req, res, next) => {
 })
 
 app.put("/update-profile", authenticate, upload.single("profileImage"), async (req, res) => {
-        try {
-                if (!req.user) {
-                        return res.status(401).json({ message: "Unauthorized. Please log in first." });
-                }
+  try {
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized. Please log in first." });
+    }
 
-                const { username, email } = req.body;
+    const { username, email } = req.body;
 
-                if (!username || !email) {
-                        return res.status(400).json({ message: "All fields are required" });
-                }
+    if (!username || !email) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
 
-                let profileImage = req.user.profileImage;
+    let profileImage = req.user.profileImage;
 
-                if (req.file) {
-                        try {
-                                const uploadResponse = await uploadOnCloudinary(req.file.path);
-                                if (uploadResponse && uploadResponse.secure_url) {
-                                        profileImage = uploadResponse.secure_url;
-                                } else {
-                                        throw new Error("Error uploading image to Cloudinary");
-                                }
-                        } catch (error) {
-                                throw new Error("Error uploading image to Cloudinary"); 
-                        }
-                }
+    if (req.file) {
+      try {
+        const bufferStream = new Readable();
+        bufferStream.push(req.file.buffer);
+        bufferStream.push(null);
 
-                const updatedUser = await User.findByIdAndUpdate(
-                        req.user.id,
-                        {
-                                username,
-                                email,
-                                profileImage
-                        },
-                        { new: true }
-                )
+        const uploadResponse = await new Promise((resolve, reject) => {
+          const uploadStream = cloudinary.v2.uploader.upload_stream(
+            { folder: 'profiles' },
+            (error, result) => {
+              if (error) reject(error);
+              else resolve(result);
+            }
+          );
+          bufferStream.pipe(uploadStream);
+        });
 
-                if (!updatedUser) {
-                        return res.status(404).json({ message: "User not found" });
-                }
-
-                res.status(200).json({ message: "User updated successfully", user: updatedUser });
-        } catch (error) {
-                console.error("Error updating user:", error.message);
-                res.status(500).json({ message: "Internal server error" });
+        if (uploadResponse && uploadResponse.secure_url) {
+          profileImage = uploadResponse.secure_url;
+        } else {
+          throw new Error("Error uploading image to Cloudinary");
         }
-})
+      } catch (error) {
+        throw new Error("Error uploading image to Cloudinary");
+      }
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user.id,
+      {
+        username,
+        email,
+        profileImage
+      },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json({ message: "User updated successfully", user: updatedUser });
+  } catch (error) {
+    console.error("Error updating user:", error.message);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
 
         // Connect to MongoDB
 // mongoose.connect(process.env.MONGODB_URL)
 // .then(() => console.log("Connected to MongoDB"))
 // .catch((error) => console.error("Error connecting to MongoDB:", error));
+// Connect to MongoDB (per-request for serverless)
 
-let isConnected = false;
+let cachedDb = null;
+const connectToDatabase = async () => {
+  if (cachedDb) return cachedDb;
+  cachedDb = await mongoose.connect(process.env.MONGODB_URL);
+  console.log("Connected to MongoDB");
+  return cachedDb;
+};
 
-async function connectToDatabase() {
-        try {
-                await mongoose.connect(process.env.MONGODB_URL, {
-                        useNewUrlParser: true,
-                        useUnifiedTopology: true,
-                });
-                isConnected = true;
-                console.log("Connected to MongoDB");
-        } catch (error) {
-                console.error("Error connecting to MongoDB:", error); 
-        }
-}
-
-// add middleware
-app.use(async (req, res, next) => {
-        if (!isConnected) {
-                await connectToDatabase();
-        }
-        next();
-})
+// Call this in routes or middleware if needed, but for Vercel, connect on startup or per request
+connectToDatabase().catch(error => console.error("Error connecting to MongoDB:", error));
 
         // Routes
 import userRoutes from "./routes/user.routes.js"
-import { uploadOnCloudinary } from "./utils/cloudinary.js";
+// import { uploadOnCloudinary } from "./utils/cloudinary.js";
 app.use("/api/user", userRoutes);
 
         // Google routes
@@ -201,7 +211,7 @@ app.get("/", (req, res) => {
 })
 
         // Start the server
-// const port = process.env.PORT || "https://band-wagon-backend.vercel.app";
+// const port = process.env.PORT || 8000;
 // app.listen(port, () => {
 //     console.log(`Server is running on http://localhost:${port}`);
 // });
