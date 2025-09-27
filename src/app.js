@@ -178,7 +178,7 @@ app.get("/", (req, res) => {
 })
 
         // Start the server
-const port = process.env.PORT || 8000;
+const port = process.env.PORT || "https://band-wagon-backend.vercel.app";
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
 });
