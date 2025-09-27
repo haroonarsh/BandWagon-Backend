@@ -158,9 +158,32 @@ app.put("/update-profile", authenticate, upload.single("profileImage"), async (r
 })
 
         // Connect to MongoDB
-mongoose.connect(process.env.MONGODB_URL)
-.then(() => console.log("Connected to MongoDB"))
-.catch((error) => console.error("Error connecting to MongoDB:", error));
+// mongoose.connect(process.env.MONGODB_URL)
+// .then(() => console.log("Connected to MongoDB"))
+// .catch((error) => console.error("Error connecting to MongoDB:", error));
+
+let isConnected = false;
+
+async function connectToDatabase() {
+        try {
+                await mongoose.connect(process.env.MONGODB_URL, {
+                        useNewUrlParser: true,
+                        useUnifiedTopology: true,
+                });
+                isConnected = true;
+                console.log("Connected to MongoDB");
+        } catch (error) {
+                console.error("Error connecting to MongoDB:", error); 
+        }
+}
+
+// add middleware
+app.use(async (req, res, next) => {
+        if (!isConnected) {
+                await connectToDatabase();
+        }
+        next();
+})
 
         // Routes
 import userRoutes from "./routes/user.routes.js"
@@ -178,7 +201,9 @@ app.get("/", (req, res) => {
 })
 
         // Start the server
-const port = process.env.PORT || "https://band-wagon-backend.vercel.app";
-app.listen(port, () => {
-    console.log(`Server is running on http://localhost:${port}`);
-});
+// const port = process.env.PORT || "https://band-wagon-backend.vercel.app";
+// app.listen(port, () => {
+//     console.log(`Server is running on http://localhost:${port}`);
+// });
+
+module.exports = app;
