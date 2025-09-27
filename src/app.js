@@ -23,7 +23,7 @@ const app = express();
 
         // Middleware
 app.use(cors({
-        origin: "http://localhost:3000",
+        origin: "https://band-wagon-iota.vercel.app",
         methods: ["GET", "POST", "PUT", "DELETE"],
         credentials: true,
 }));
@@ -89,9 +89,9 @@ passport.deserializeUser((data, done) => {
 app.get("/auth/google", passport.authenticate("google", { scope: ["profile", "email"] }));
 
 app.get("/auth/google/callback", passport.authenticate("google", { 
-        successRedirect: "http://localhost:3000/home",
-        failureRedirect: "http://localhost:3000/login", 
-        failWithError: "http://localhost:3000/login",
+        successRedirect: "https://band-wagon-iota.vercel.app/home",
+        failureRedirect: "https://band-wagon-iota.vercel.app/login", 
+        failWithError: "https://band-wagon-iota.vercel.app/login",
 }))
 
 app.get("/login/success", async (req, res) => {
@@ -105,7 +105,7 @@ app.get("/login/success", async (req, res) => {
 app.get("/logout", (req, res, next) => {
         req.logout(function(err){
                 if(err) { return next(err) }
-                res.redirect("http://localhost:3000/login");
+                res.redirect("https://band-wagon-iota.vercel.app/login");
         })
 })
 
