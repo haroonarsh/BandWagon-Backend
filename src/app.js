@@ -36,12 +36,13 @@ app.use(express.static("public"));
 app.use(bodyParser.urlencoded({ limit: "50mb", extended: true, parameterLimit: 50000 }));
 app.use(bodyParser.json());
 
-        // Setup session
+        // Setup session for Production
 app.use(session({
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: true
-}))
+        secret: process.env.SESSION_SECRET,
+        resave: false,
+        saveUninitialized: true,
+        cookie: { secure: true } // Set to true if using HTTPS
+}));
 
         // Setup passport
 app.use(passport.initialize());
