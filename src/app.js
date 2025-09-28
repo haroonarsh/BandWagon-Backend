@@ -27,9 +27,9 @@ cloudinary.v2.config({
 
         // Middleware
 app.use(cors({
-        origin: "http://localhost:3000",
-        methods: ["GET", "POST", "PUT", "DELETE"],
-        credentials: true,
+    origin: "https://band-wagon-iota.vercel.app",  // Your frontend URL
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
 }));
 app.use(express.json());
 app.use(express.static("public"));
@@ -49,38 +49,36 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 passport.use(
-        new GoogleStrategy({
-                clientID: process.env.GOOGLE_CLIENT_ID,
-                clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-                callbackURL: "/auth/google/callback",
-                scope: ["profile", "email"]
-        },
-        async (accessToken, refreshToken, profile, done) => {
-                try {
-                        // Find or create user in your database
-                        const user = await User.findOne({ googleId: profile.id });
+    new GoogleStrategy({
+        clientID: process.env.GOOGLE_CLIENT_ID,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+        callbackURL: "/auth/google/callback",
+        scope: ["profile", "email"]
+    },
+    async (accessToken, refreshToken, profile, done) => {
+        try {
+            let user = await User.findOne({ googleId: profile.id });
 
-                        if (!user) {
-                                const user = new User({
-                                    googleId: profile.id,
-                                    username: profile.displayName,
-                                    email: profile.emails[0].value,
-                                    password: profile.displayName,
-                                    profileImage: profile.photos[0].value,
-                                })
-                                await user.save();
-                                // return done(null, newUser);
-                        }
+            if (!user) {
+                user = new User({
+                    googleId: profile.id,
+                    username: profile.displayName,
+                    email: profile.emails[0].value,
+                    password: profile.displayName,  // Note: This is insecure; consider hashing or removing
+                    profileImage: profile.photos[0].value,
+                });
+                await user.save();
+            }
 
-                        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1d" });
+            const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1d" });
 
-                            return done(null, { user, token });
-                } catch (error) {
-                        done(error, null); 
-                }
+            return done(null, { user, token });
+        } catch (error) {
+            return done(error, null); 
         }
+    }
 )
-)
+);
 
 passport.serializeUser((data, done) => {
         done(null, data);
@@ -185,7 +183,7 @@ app.put("/update-profile", authenticate, upload.single("profileImage"), async (r
 let cachedConnection = null;
 async function connectDB() {
   if (cachedConnection) return cachedConnection;
-  cachedConnection = await mongoose.connect(process.env.MONGODB_URL);
+  cachedConnection = await mongoose.createConnection(process.env.MONGODB_URL);
   console.log("Connected to MongoDB");
   return cachedConnection;
 }
@@ -203,13 +201,18 @@ app.use("/api/user", userRoutes);
 // import googleRoutes from "./routes/auth.routes.js"
 // import { access } from "fs";
 // app.use("/auth", googleRoutes);
-
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).json({ message: "Internal server error" });
+});
         // Default route
 app.get("/", (req, res) => {
     res.send("Backend is running...");  
 })
 
         // Start the server
-
-
-module.exports = app;
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+})
+// module.exports = app;
