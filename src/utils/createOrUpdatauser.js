@@ -1,4 +1,4 @@
-import User from "../models/user.model";
+import User from "../models/user.model.js";
 
 const createOrUpdateUser = async (user, account, profile) => {
     const profileImage = account.provider === 'google' ? profile.picture : user.profileImage;

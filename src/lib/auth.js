@@ -1,5 +1,5 @@
-import User from "@/backend/models/user.model";
-import { connectDB } from "./mongodb";
+import User from "@/backend/models/user.model.js";
+import { connectDB } from "./mongodb.js";
 import Credentials from "next-auth/providers/credentials";
 import NextAuth from "next-auth";
 import bcrypt from "bcryptjs";

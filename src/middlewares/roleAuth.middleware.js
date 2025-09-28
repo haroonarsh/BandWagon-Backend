@@ -1,4 +1,3 @@
-import ApiError from "../utils/apiError.js";
 
 export const roleAuth = (...roles) => {
     return (req, res, next) => {

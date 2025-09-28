@@ -184,16 +184,17 @@ app.put("/update-profile", authenticate, upload.single("profileImage"), async (r
 // .catch((error) => console.error("Error connecting to MongoDB:", error));
 // Connect to MongoDB (per-request for serverless)
 
-let cachedDb = null;
-const connectToDatabase = async () => {
-  if (cachedDb) return cachedDb;
-  cachedDb = await mongoose.connect(process.env.MONGODB_URL);
+let cachedConnection = null;
+async function connectDB() {
+  if (cachedConnection) return cachedConnection;
+  cachedConnection = await mongoose.connect(process.env.MONGODB_URL);
   console.log("Connected to MongoDB");
-  return cachedDb;
-};
-
-// Call this in routes or middleware if needed, but for Vercel, connect on startup or per request
-connectToDatabase().catch(error => console.error("Error connecting to MongoDB:", error));
+  return cachedConnection;
+}
+app.use(async (req, res, next) => { // Or call in routes
+  await connectDB();
+  next();
+});
 
         // Routes
 import userRoutes from "./routes/user.routes.js"
