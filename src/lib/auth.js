@@ -1,8 +1,7 @@
-import User from "@/backend/models/user.model.js";
-import { connectDB } from "./mongodb.js";
-import Credentials from "next-auth/providers/credentials";
-import NextAuth from "next-auth";
-import bcrypt from "bcryptjs";
+const User = require("../models/user.model");
+const connectDB = require("../config/db");
+const Credentials = require("next-auth/providers/credentials").default;
+const bcrypt = require("bcryptjs");
 
 export const authOptions = {
     provider: [

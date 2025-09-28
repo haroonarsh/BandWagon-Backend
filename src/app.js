@@ -1,17 +1,17 @@
-import express from "express";
-import mongoose from "mongoose";
-import cors from "cors";
-import bodyParser from "body-parser";
-import dotenv from "dotenv";
-import passport from "passport";
-import session from "express-session";
-import { Strategy as GoogleStrategy } from "passport-google-oauth20";
-import User from "./models/user.model.js";
-import jwt from "jsonwebtoken";
-import authenticate from "./middlewares/auth.middleware.js";
-import upload from "./middlewares/upload.js";
-import { Readable } from 'stream'; // For buffer-to-stream conversion in Cloudinary
-import cloudinary from 'cloudinary'; // Import Cloudinary v2
+const express = require("express");
+const mongoose = require("mongoose");
+const cors = require("cors");
+const bodyParser = require("body-parser");
+const dotenv = require("dotenv");
+const passport = require("passport");
+const session = require("express-session");
+const GoogleStrategy = require("passport-google-oauth20").Strategy;
+const User = require("./models/user.model");
+const jwt = require("jsonwebtoken");
+const authenticate = require("./middlewares/auth.middleware.js");
+const upload = require("./middlewares/upload.js");
+const { Readable } = require('stream'); // For buffer-to-stream conversion in Cloudinary
+const cloudinary = require("cloudinary"); // Import Cloudinary v2
 // import "./auth/passport.js";
 
 dotenv.config();
@@ -194,7 +194,7 @@ app.use(async (req, res, next) => { // Or call in routes
 });
 
         // Routes
-import userRoutes from "./routes/user.routes.js"
+const userRoutes = require("./routes/user.routes");
 // import { uploadOnCloudinary } from "./utils/cloudinary.js";
 app.use("/api/user", userRoutes);
 

@@ -1,8 +1,7 @@
-import express from "express";
-import { signup, login, updateUser, logout, updatePassword, deleteUser, becomeArtist, createShow, becomeUser, changeEmail, shows, getShows, getArtist, getSingleArtist, getAllUsersWithShows, getArtistsShows, editShow } from "../controllers/user.controller.js";
-import authenticate from "../middlewares/auth.middleware.js";
-import upload from "../middlewares/upload.js";
-import { roleAuth } from "../middlewares/roleAuth.middleware.js";
+const express = require("express");
+const { signup, login, updateUser, logout, updatePassword, deleteUser, becomeArtist, createShow, becomeUser, changeEmail, shows, getShows, getArtist, getSingleArtist, getAllUsersWithShows, getArtistsShows, editShow } = require("../controllers/user.controller");
+const authenticate = require("../middlewares/auth.middleware").default;
+const upload = require("../middlewares/upload");
 // import passport from "passport";
 
 const router = express.Router();
@@ -26,4 +25,4 @@ router.get("/users-with-shows", getAllUsersWithShows);
 router.get("/get-artist-shows/:id", getArtistsShows);
 router.put("/edit-show/:id", upload.single("image"), editShow);
 
-export default router;
+module.exports = router;

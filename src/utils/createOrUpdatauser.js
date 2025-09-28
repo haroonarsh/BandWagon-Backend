@@ -1,4 +1,4 @@
-import User from "../models/user.model.js";
+const User = require("../models/user.model");
 
 const createOrUpdateUser = async (user, account, profile) => {
     const profileImage = account.provider === 'google' ? profile.picture : user.profileImage;
@@ -22,4 +22,4 @@ const createOrUpdateUser = async (user, account, profile) => {
     return existingUser;
   };
   
-export default createOrUpdateUser;
+module.exports = createOrUpdateUser;

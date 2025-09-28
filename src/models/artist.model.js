@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
 
 const artistSchema = new mongoose.Schema({
     artistImage: {
@@ -49,4 +49,4 @@ const artistSchema = new mongoose.Schema({
 
 const Artist = mongoose.models.Artist || mongoose.model("Artist", artistSchema);
 
-export default Artist;
+module.exports = Artist;

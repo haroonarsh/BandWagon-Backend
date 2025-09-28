@@ -1,13 +1,12 @@
-import User from "../models/user.model.js";
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
-import ApiResponse from "../utils/ApiResponse.js";
-import asyncHandler from "../utils/asyncHandler.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
-import Artist from "../models/artist.model.js";
-import Show from "../models/show.model.js";
-import mongoose from "mongoose";
-import ApiError from "../utils/apiError.js";
+const User = require("../models/user.model");
+const ApiResponse = require("../utils/apiResponse.js");
+const jwt = require("jsonwebtoken");
+const asyncHandler = require("../utils/asyncHandler.js");
+const { uploadOnCloudinary } = require("../utils/cloudinary.js");
+const Artist = require("../models/artist.model.js");
+const Show = require("../models/show.model.js");
+const mongoose = require("mongoose");
+const ApiError = require("../utils/apiError.js");
 
         // utility functions to generate tokens
 const generateAccessToken = (userId) => {
@@ -736,4 +735,4 @@ const editShow = asyncHandler(async (req, res) => {
   }
 })
 
-export { signup, login, updateUser, logout, updatePassword, deleteUser, createShow, becomeUser, becomeArtist, changeEmail, shows, getShows, getArtist, getSingleArtist, getAllUsersWithShows, getArtistsShows, editShow };
+module.exports = { signup, login, updateUser, logout, updatePassword, deleteUser, createShow, becomeUser, becomeArtist, changeEmail, shows, getShows, getArtist, getSingleArtist, getAllUsersWithShows, getArtistsShows, editShow };
