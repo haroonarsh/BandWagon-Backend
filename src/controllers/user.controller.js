@@ -1,13 +1,13 @@
 import User from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import ApiError from "../utils/apiError.js";
 import ApiResponse from "../utils/ApiResponse.js";
 import asyncHandler from "../utils/asyncHandler.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import Artist from "../models/artist.model.js";
 import Show from "../models/show.model.js";
 import mongoose from "mongoose";
+import ApiError from "../utils/apiError.js";
 
         // utility functions to generate tokens
 const generateAccessToken = (userId) => {

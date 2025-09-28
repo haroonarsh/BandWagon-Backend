@@ -16,9 +16,6 @@ import cloudinary from 'cloudinary'; // Import Cloudinary v2
 
 dotenv.config();
 
-const clientId = process.env.GOOGLE_CLIENT_ID;
-const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
-
 const app = express();
 
 // Cloudinary config (move to a separate file if needed)
@@ -52,8 +49,8 @@ app.use(passport.session());
 
 passport.use(
         new GoogleStrategy({
-                clientID: clientId,
-                clientSecret: clientSecret,
+                clientID: process.env.GOOGLE_CLIENT_ID,
+                clientSecret: process.env.GOOGLE_CLIENT_SECRET,
                 callbackURL: "/auth/google/callback",
                 scope: ["profile", "email"]
         },
