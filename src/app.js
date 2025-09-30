@@ -40,14 +40,14 @@ app.use(bodyParser.json());
 // Replace your session setup with:
 app.use(session({
   secret: process.env.SESSION_SECRET,
-  resave: false,
-  saveUninitialized: true,
+  resave: false, // work in both dev and prod
+  saveUninitialized: false, // work in both dev and prod
   store: MongoStore.create({
     mongoUrl: process.env.MONGODB_URL,
     collectionName: 'sessions',  // Optional: custom collection
   }),
   cookie: {
-    secure: true,  // HTTPS only in prod
+    secure: process.env.NODE_ENV === "production",  // both https and http in dev and prod
     maxAge: 24 * 60 * 60 * 1000,  // 1 day
   },
 }));
