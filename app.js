@@ -6,10 +6,10 @@ const dotenv = require("dotenv");
 const passport = require("passport");
 const session = require("express-session");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
-const User = require("./models/user.model");
+const User = require("./src/models/user.model.js");
 const jwt = require("jsonwebtoken");
-const authenticate = require("./middlewares/auth.middleware.js");
-const upload = require("./middlewares/upload.js");
+const authenticate = require("./src/middlewares/auth.middleware.js");
+const upload = require("./src/middlewares/upload.js");
 const { Readable } = require('stream'); // For buffer-to-stream conversion in Cloudinary
 const cloudinary = require("cloudinary"); // Import Cloudinary v2
 const MongoStore = require('connect-mongo');
@@ -201,7 +201,7 @@ app.use(async (req, res, next) => { // Or call in routes
 });
 
         // Routes
-const userRoutes = require("./routes/user.routes");
+const userRoutes = require("./src/routes/user.routes.js");
 // import { uploadOnCloudinary } from "./utils/cloudinary.js";
 app.use("/api/user", userRoutes);
 
