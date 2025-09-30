@@ -185,17 +185,22 @@ app.put("/update-profile", authenticate, upload.single("profileImage"), async (r
 });
 
         // Connect to MongoDB
-// mongoose.connect(process.env.MONGODB_URL)
-// .then(() => console.log("Connected to MongoDB"))
-// .catch((error) => console.error("Error connecting to MongoDB:", error));
+mongoose.connect(process.env.MONGODB_URL)
+.then(() => console.log("Connected to MongoDB"))
+.catch((error) => console.error("Error connecting to MongoDB:", error));
 // Connect to MongoDB (per-request for serverless)
 
 let cachedConnection = null;
 async function connectDB() {
-  if (cachedConnection) return cachedConnection;
-  cachedConnection = await mongoose.createConnection(process.env.MONGODB_URL);
-  console.log("Connected to MongoDB");
-  return cachedConnection;
+  try {
+    if (cachedConnection) return cachedConnection;
+    cachedConnection = await mongoose.createConnection(process.env.MONGODB_URL);
+    console.log("Connected to MongoDB");
+    return cachedConnection;
+  } catch (error) {
+    console.error("Error connecting to MongoDB:", error);
+    throw error;
+  }
 }
 app.use(async (req, res, next) => { // Or call in routes
   await connectDB();
