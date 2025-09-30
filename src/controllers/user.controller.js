@@ -1,12 +1,12 @@
 const User = require("../models/user.model");
-const ApiResponse = require("../utils/apiResponse.js");
+const ApiResponse = require("../utils/ApiResponse.js");
 const jwt = require("jsonwebtoken");
 const asyncHandler = require("../utils/asyncHandler.js");
 const { uploadOnCloudinary } = require("../utils/cloudinary.js");
 const Artist = require("../models/artist.model.js");
 const Show = require("../models/show.model.js");
 const mongoose = require("mongoose");
-const ApiError = require("../utils/apiError.js");
+const ApiError = require("../utils/ApiError.js");
 
         // utility functions to generate tokens
 const generateAccessToken = (userId) => {
