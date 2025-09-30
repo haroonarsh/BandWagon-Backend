@@ -1,7 +1,7 @@
 const express = require("express");
 const { signup, login, updateUser, logout, updatePassword, deleteUser, becomeArtist, createShow, becomeUser, changeEmail, shows, getShows, getArtist, getSingleArtist, getAllUsersWithShows, getArtistsShows, editShow } = require("../controllers/user.controller");
-const authenticate = require("../middlewares/auth.middleware").default;
-const upload = require("../middlewares/upload").default;
+const authenticate = require("../middlewares/auth.middleware");
+const upload = require("../middlewares/upload");
 // import passport from "passport";
 
 const router = express.Router();
