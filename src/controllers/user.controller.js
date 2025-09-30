@@ -736,3 +736,5 @@ const editShow = asyncHandler(async (req, res) => {
 })
 
 module.exports = { signup, login, updateUser, logout, updatePassword, deleteUser, createShow, becomeUser, becomeArtist, changeEmail, shows, getShows, getArtist, getSingleArtist, getAllUsersWithShows, getArtistsShows, editShow };
+
+console.log('Controller loaded:', { updateUser: !!updateUser });
