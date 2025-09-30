@@ -12,6 +12,7 @@ const authenticate = require("./middlewares/auth.middleware.js");
 const upload = require("./middlewares/upload.js");
 const { Readable } = require('stream'); // For buffer-to-stream conversion in Cloudinary
 const cloudinary = require("cloudinary"); // Import Cloudinary v2
+const MongoStore = require('connect-mongo');
 // import "./auth/passport.js";
 
 dotenv.config();
@@ -24,7 +25,7 @@ cloudinary.v2.config({
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
-
+// https://band-wagon-iota.vercel.app
         // Middleware
 app.use(cors({
     origin: "https://band-wagon-iota.vercel.app",  // Your frontend URL
@@ -36,12 +37,19 @@ app.use(express.static("public"));
 app.use(bodyParser.urlencoded({ limit: "50mb", extended: true, parameterLimit: 50000 }));
 app.use(bodyParser.json());
 
-        // Setup session for Production
+// Replace your session setup with:
 app.use(session({
-        secret: process.env.SESSION_SECRET,
-        resave: false,
-        saveUninitialized: true,
-        cookie: { secure: true } // Set to true if using HTTPS
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: true,
+  store: MongoStore.create({
+    mongoUrl: process.env.MONGODB_URL,
+    collectionName: 'sessions',  // Optional: custom collection
+  }),
+  cookie: {
+    secure: true,  // HTTPS only in prod
+    maxAge: 24 * 60 * 60 * 1000,  // 1 day
+  },
 }));
 
         // Setup passport
