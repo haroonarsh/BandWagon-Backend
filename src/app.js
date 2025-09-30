@@ -28,7 +28,9 @@ cloudinary.v2.config({
 // https://band-wagon-iota.vercel.app
         // Middleware
 app.use(cors({
-    origin: "https://band-wagon-iota.vercel.app",  // Your frontend URL
+    origin: ["https://band-wagon-iota.vercel.app",
+      "http://localhost:3000"
+    ],  // Your frontend URL
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
 }));
